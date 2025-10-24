@@ -58,18 +58,18 @@ ec_pdo_entry_info_t EtherCATMaster::slave_0_pdo_entries[] = {
     {0x60ff, 0x00, 32},
     {0x6071, 0x00, 16},
     {0x6060, 0x00, 8},
-    {0x0000, 0x00, 8}, /* Gap */
+    {0x0000, 0x00, 8},
     {0x6041, 0x00, 16},
     {0x6064, 0x00, 32},
     {0x606c, 0x00, 32},
     {0x6077, 0x00, 16},
     {0x6061, 0x00, 8},
-    {0x0000, 0x00, 8}, /* Gap */
+    {0x0000, 0x00, 8},
 };
 
 ec_pdo_info_t EtherCATMaster::slave_0_pdos[] = {
-    {0x1600, 6, slave_0_pdo_entries + 0},
-    {0x1a00, 6, slave_0_pdo_entries + 6},
+    {0x1600, 6, slave_0_pdo_entries + 0}, /* csp/csv RxPDO */
+    {0x1a00, 6, slave_0_pdo_entries + 6}, /* csp/csv TxPDO */
 };
 
 ec_sync_info_t EtherCATMaster::slave_0_syncs[] = {
@@ -232,8 +232,11 @@ void* EtherCATMaster::simple_cyclic_task(void *data)
     periodic_task_init(&pinfo);
 
     while (1) {
-        self->do_rt_task();   
         wait_rest_of_period(&pinfo);
+        ecrt_master_application_time(master, TIMESPEC2NS(pinfo.next_period));
+        self->do_rt_task();   
+        
+        
     }
 
     return NULL;
