@@ -22,7 +22,7 @@
 
 #define NSEC_PER_SEC 1000000000
 #define FirstSlavePos  0, 0
-#define TI5MOTOR 0x00522227, 0x00009253
+#define TI5MOTOR 0x000004d8, 0x00002006
 #define MY_STACK_SIZE 8192
 
 

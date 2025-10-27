@@ -53,30 +53,32 @@ unsigned int EtherCATMaster::sync_ref_counter = 0;
 
 
 ec_pdo_entry_info_t EtherCATMaster::slave_0_pdo_entries[] = {
-    {0x6040, 0x00, 16},
-    {0x607a, 0x00, 32},
-    {0x60ff, 0x00, 32},
-    {0x6071, 0x00, 16},
-    {0x6060, 0x00, 8},
-    {0x0000, 0x00, 8},
-    {0x6041, 0x00, 16},
-    {0x6064, 0x00, 32},
-    {0x606c, 0x00, 32},
-    {0x6077, 0x00, 16},
-    {0x6061, 0x00, 8},
-    {0x0000, 0x00, 8},
+    {0x6040, 0x00, 16}, /* Control_Word */
+    {0x6060, 0x00, 8}, /* Modes_of_Operation */
+    {0x0000, 0x00, 8}, /* Gap */
+    {0x60ff, 0x00, 32}, /* Target_Velocity */
+    {0x607a, 0x00, 32}, /* Target_Position */
+    {0x6071, 0x00, 16}, /* Target_torque */
+    {0x6041, 0x00, 16}, /* Status_Word */
+    {0x603f, 0x00, 16}, /* Error_Code */
+    {0x6061, 0x00, 8}, /* Modes_of_operation_display */
+    {0x0000, 0x00, 8}, /* Gap */
+    {0x6064, 0x00, 32}, /* Position_actual_value */
+    {0x606c, 0x00, 32}, /* Velocity_actual_value */
+    {0x6077, 0x00, 16}, /* Torque_actual_value */
 };
 
 ec_pdo_info_t EtherCATMaster::slave_0_pdos[] = {
-    {0x1600, 6, slave_0_pdo_entries + 0}, /* csp/csv RxPDO */
-    {0x1a00, 6, slave_0_pdo_entries + 6}, /* csp/csv TxPDO */
+    {0x1600, 6, slave_0_pdo_entries + 0}, /* RxPDO201 */
+    {0x1a00, 4, slave_0_pdo_entries + 6}, /* TxPDO181 */
+    {0x1a01, 3, slave_0_pdo_entries + 10}, /* TxPDO281 */
 };
 
 ec_sync_info_t EtherCATMaster::slave_0_syncs[] = {
     {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},
     {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
     {2, EC_DIR_OUTPUT, 1, slave_0_pdos + 0, EC_WD_ENABLE},
-    {3, EC_DIR_INPUT, 1, slave_0_pdos + 1, EC_WD_DISABLE},
+    {3, EC_DIR_INPUT, 2, slave_0_pdos + 1, EC_WD_DISABLE},
     {0xff}
 };
 
@@ -358,7 +360,7 @@ bool EtherCATMaster::init_master(){
     if (ecrt_domain_reg_pdo_entry_list(domain1, domain1_regs)) {
         fprintf(stderr, "PDO entry registration failed!\n");
         return false;
-    }
+    } 
     printf("off_control_word=%u off_status_word=%u off_mode=%u off_pos=%u off_mode_display=%u\n",
        off_control_word, off_status_word, off_mode, off_pos, off_mode_display);
 
