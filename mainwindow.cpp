@@ -68,14 +68,7 @@ void MainWindow::sendcw_qt()
     }// 静态成员初始化
 
 
-ec_master_t* EtherCATMaster::master = nullptr;
-ec_master_state_t EtherCATMaster::master_state = {};
 
-ec_domain_t* EtherCATMaster::domain1 = nullptr;
-ec_domain_state_t EtherCATMaster::domain1_state = {};
-
-ec_slave_config_t* EtherCATMaster::sc_0 = nullptr;
-ec_slave_config_state_t EtherCATMaster::sc_0_state = {};
 
     if (!ok) {
         qWarning() << "Invalid control word input:" << text;
