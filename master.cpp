@@ -41,27 +41,28 @@ unsigned int EtherCATMaster::off_mode_0 = 0;
 unsigned int EtherCATMaster::off_pos_0 = 0;
 unsigned int EtherCATMaster::off_mode_display_0 = 0;
 unsigned int EtherCATMaster::off_pos_actual_0 = 0;
+unsigned int EtherCATMaster::off_error_code_0 = 0;
+unsigned int EtherCATMaster::off_csvspeed = 0;
 
-// unsigned int EtherCATMaster::off_status_word_1 = 0;
-// unsigned int EtherCATMaster::off_control_word_1 = 0;
-// unsigned int EtherCATMaster::off_mode_1 = 0;
-// unsigned int EtherCATMaster::off_pos_1 = 0;
-// unsigned int EtherCATMaster::off_mode_display_1 = 0;
-// unsigned int EtherCATMaster::off_pos_actual_1 = 0;
+unsigned int EtherCATMaster::off_status_word_1 = 0;
+unsigned int EtherCATMaster::off_control_word_1 = 0;
+unsigned int EtherCATMaster::off_mode_1 = 0;
+unsigned int EtherCATMaster::off_pos_1 = 0;
+unsigned int EtherCATMaster::off_mode_display_1 = 0;
+unsigned int EtherCATMaster::off_pos_actual_1 = 0;
+// unsigned int EtherCATMaster::off_error_code_1 = 0;
+
 
 const ec_pdo_entry_reg_t EtherCATMaster::domain1_regs[] = {
-    {FirstSlavePos,  ZDL, 0x6040, 0, &off_control_word_0},
-    {FirstSlavePos,  ZDL, 0x607A, 0, &off_pos_0},
-    {FirstSlavePos,  ZDL, 0x6041, 0, &off_status_word_0},
-    {FirstSlavePos,  ZDL, 0x6060, 0, &off_mode_0},
-    {FirstSlavePos,  ZDL, 0x6061, 0, &off_mode_display_0},
-    {FirstSlavePos,  ZDL, 0x6064, 0, &off_pos_actual_0},
-    // {SecondSlavePos,  TI5MOTOR, 0x6040, 0, &off_control_word_1},
-    // {SecondSlavePos,  TI5MOTOR, 0x607A, 0, &off_pos_1},
-    // {SecondSlavePos,  TI5MOTOR, 0x6041, 0, &off_status_word_1},
-    // {SecondSlavePos,  TI5MOTOR, 0x6060, 0, &off_mode_1},
-    // {SecondSlavePos,  TI5MOTOR, 0x6061, 0, &off_mode_display_1},
-    // {SecondSlavePos,  TI5MOTOR, 0x6064, 0, &off_pos_actual_1},
+    {FirstSlavePos,  TI5MOTOR, 0x6040, 0, &off_control_word_0},
+    {FirstSlavePos,  TI5MOTOR, 0x607A, 0, &off_pos_0},
+    {FirstSlavePos,  TI5MOTOR, 0x6041, 0, &off_status_word_0},
+    {FirstSlavePos,  TI5MOTOR, 0x6060, 0, &off_mode_0},
+    {FirstSlavePos,   TI5MOTOR, 0x6061, 0, &off_mode_display_0},
+    {FirstSlavePos,  TI5MOTOR, 0x6064, 0, &off_pos_actual_0},
+ 
+    {FirstSlavePos,  TI5MOTOR, 0X60ff, 0, &off_csvspeed},
+
     {}
 };
 
@@ -71,63 +72,39 @@ unsigned int EtherCATMaster::sync_ref_counter = 0;
 
 
 ec_pdo_entry_info_t EtherCATMaster::slave_0_pdo_entries[] = {
-    {0x6040, 0x00, 16}, /* Control_Word */
-    {0x6060, 0x00, 8}, /* Modes_of_Operation */
+    {0x6040, 0x00, 16}, /* Control Word */
+    {0x607a, 0x00, 32}, /* Target Position */
+    {0x60ff, 0x00, 32}, /* Target Velocity */
+    {0x6071, 0x00, 16}, /* Target Torque */
+    {0x6060, 0x00, 8}, /* Modes of Operation */
     {0x0000, 0x00, 8}, /* Gap */
-    {0x60ff, 0x00, 32}, /* Target_Velocity */
-    {0x607a, 0x00, 32}, /* Target_Position */
-    {0x6071, 0x00, 16}, /* Target_torque */
-    {0x6041, 0x00, 16}, /* Status_Word */
-    {0x603f, 0x00, 16}, /* Error_Code */
-    {0x6061, 0x00, 8}, /* Modes_of_operation_display */
+    {0x6041, 0x00, 16}, /* Status Word */
+    {0x6064, 0x00, 32}, /* Position Actual Value */
+    {0x606c, 0x00, 32}, /* Velocity Actual Value */
+    {0x6077, 0x00, 16}, /* Torque Actual Value */
+    {0x6061, 0x00, 8}, /* Modes of Operation Display */
     {0x0000, 0x00, 8}, /* Gap */
-    {0x6064, 0x00, 32}, /* Position_actual_value */
-    {0x606c, 0x00, 32}, /* Velocity_actual_value */
-    {0x6077, 0x00, 16}, /* Torque_actual_value */
 };
 
 ec_pdo_info_t EtherCATMaster::slave_0_pdos[] = {
-    {0x1600, 6, slave_0_pdo_entries + 0}, /* RxPDO201 */
-    {0x1a00, 4, slave_0_pdo_entries + 6}, /* TxPDO181 */
-    {0x1a01, 3, slave_0_pdo_entries + 10}, /* TxPDO281 */
+    {0x1600, 6, slave_0_pdo_entries + 0}, /* csp/csv RxPDO */
+    {0x1a00, 6, slave_0_pdo_entries + 6}, /* csp/csv TxPDO */
 };
 
 ec_sync_info_t EtherCATMaster::slave_0_syncs[] = {
     {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},
     {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
     {2, EC_DIR_OUTPUT, 1, slave_0_pdos + 0, EC_WD_ENABLE},
-    {3, EC_DIR_INPUT, 2, slave_0_pdos + 1, EC_WD_DISABLE},
+    {3, EC_DIR_INPUT, 1, slave_0_pdos + 1, EC_WD_DISABLE},
     {0xff}
 };
 
+/* Master 0, Slave 1, "Ti5Robot_JointMotor"
+ * Vendor ID:       0x00522227
+ * Product code:    0x00009253
+ * Revision number: 0x00010005
+ */
 
-// ec_pdo_entry_info_t EtherCATMaster::slave_1_pdo_entries[] = {
-//     {0x6040, 0x00, 16}, /* Control Word */
-//     {0x607a, 0x00, 32}, /* Target Position */
-//     {0x60ff, 0x00, 32}, /* Target Velocity */
-//     {0x6071, 0x00, 16}, /* Target Torque */
-//     {0x6060, 0x00, 8}, /* Modes of Operation */
-//     {0x0000, 0x00, 8}, /* Gap */
-//     {0x6041, 0x00, 16}, /* Status Word */
-//     {0x6064, 0x00, 32}, /* Position Actual Value */
-//     {0x606c, 0x00, 32}, /* Velocity Actual Value */
-//     {0x6077, 0x00, 16}, /* Torque Actual Value */
-//     {0x6061, 0x00, 8}, /* Modes of Operation Display */
-//     {0x0000, 0x00, 8}, /* Gap */
-// };
-
-// ec_pdo_info_t EtherCATMaster::slave_1_pdos[] = {
-//     {0x1600, 6, slave_1_pdo_entries + 0}, /* csp/csv RxPDO */
-//     {0x1a00, 6, slave_1_pdo_entries + 6}, /* csp/csv TxPDO */
-// };
-
-// ec_sync_info_t EtherCATMaster::slave_1_syncs[] = {
-//     {0, EC_DIR_OUTPUT, 0, NULL, EC_WD_DISABLE},
-//     {1, EC_DIR_INPUT, 0, NULL, EC_WD_DISABLE},
-//     {2, EC_DIR_OUTPUT, 1, slave_1_pdos + 0, EC_WD_ENABLE},
-//     {3, EC_DIR_INPUT, 1, slave_1_pdos + 1, EC_WD_DISABLE},
-//     {0xff}
-// };
 
 
 EtherCATMaster::period_info EtherCATMaster::pinfo = { {}, 1000000 };
@@ -231,8 +208,8 @@ void EtherCATMaster::do_rt_task(){
         counter--;
     } else { // do this at 1 Hz
         counter = frequency;
-        printf("status_0: 0x%04x,mode_0: 0x%04x, mode_disp_0:0x%04x, actual_pos_0:%d\n", status_0,mode_0,mode_disp_0,pos_actual_0); 
-        // printf("status_1: 0x%04x,mode_1: 0x%04x, mode_disp_1:0x%04x, actual_pos_1:%d\n", status_1,mode_1,mode_disp_1,pos_actual_1); 
+        printf("status_0: 0x%04x,mode_0: 0x%04x, mode_disp_0:0x%04x, error_code_0:%04x,actual_pos_0:%d\n", status_0,mode_0,mode_disp_0,error_code_0,pos_actual_0); 
+       
         // calculate new process data
         blink = !blink;
 
@@ -248,39 +225,46 @@ void EtherCATMaster::do_rt_task(){
         mode_0 = EC_READ_S8(domain1_pd + off_mode_0); 
         mode_disp_0 = EC_READ_S8(domain1_pd + off_mode_display_0);
         pos_actual_0 = EC_READ_S32(domain1_pd + off_pos_actual_0);
+        error_code_0 = EC_READ_U16(domain1_pd + off_error_code_0);
 
-        // status_1 = EC_READ_U16(domain1_pd + off_status_word_1);
-        // mode_1 = EC_READ_S8(domain1_pd + off_mode_1); 
-        // mode_disp_1 = EC_READ_S8(domain1_pd + off_mode_display_1);
-        // pos_actual_1 = EC_READ_S32(domain1_pd + off_pos_actual_1);
+
+
         // printf("status_0: 0x%04x,mode_0: 0x%04x, mode_disp_0:0x%04x, actual_pos:%d\n", status_0,mode_0,mode_disp_0,pos_actual_0); 
         if(cw_flag06){
             EC_WRITE_U16(domain1_pd+off_control_word_0,0x06);
-            // EC_WRITE_U16(domain1_pd+off_control_word_1,0x06);
+
             cw_flag06 = false;
         }
         if(cw_flag07){
             EC_WRITE_U16(domain1_pd+off_control_word_0,0x07);
-            // EC_WRITE_U16(domain1_pd+off_control_word_1,0x07);
+        
             cw_flag07 =false;
         }
         if(cw_flag0f){
             EC_WRITE_U16(domain1_pd+off_control_word_0,0x0f);
-            // EC_WRITE_U16(domain1_pd+off_control_word_1,0x0f);
+            EC_WRITE_S32(domain1_pd+off_pos_0,pos_actual_0);
             cw_flag0f =false;
         }
         if(cw_flag80){
             EC_WRITE_U16(domain1_pd+off_control_word_0,0x80);
-            // EC_WRITE_U16(domain1_pd+off_control_word_1,0x80);
+
             cw_flag80 =false;
         }
         if(mode_flag){
             EC_WRITE_S8(domain1_pd+off_mode_0,0X08);
-            // EC_WRITE_S8(domain1_pd+off_mode_1,0X08);
+      
 
             mode_flag =false;
         }
+        if(mode_flag2){
+            EC_WRITE_S8(domain1_pd+off_mode_0,0X09);
+   
+            EC_WRITE_S32(domain1_pd+off_csvspeed,csv_value);
+
+            mode_flag2 =false;
+        }
         if(pos_flag_0){
+            EC_WRITE_S32(domain1_pd+off_pos_0,pos_value_0);
             EC_WRITE_S32(domain1_pd+off_pos_0,pos_value_0);
             
         }
@@ -467,7 +451,7 @@ bool EtherCATMaster::init_master(){
     }
 
     if (!(sc_0 = ecrt_master_slave_config(
-                    master, FirstSlavePos, ZDL))) {
+                    master, FirstSlavePos, TI5MOTOR))) {
         fprintf(stderr, "Failed to get slave configuration.\n");
         return false;
     }
@@ -498,6 +482,7 @@ bool EtherCATMaster::init_master(){
     }
     printf("off_control_word_0=%u off_status_word_0=%u off_mode_0=%u off_pos_0=%u off_mode_display_0=%u\n",
        off_control_word_0, off_status_word_0, off_mode_0, off_pos_0, off_mode_display_0);
+    
 
     ecrt_slave_config_dc(sc_0, 0x0300, pinfo.period_ns, 0, 0, 0);
     // ecrt_slave_config_dc(sc_1, 0x0300, pinfo.period_ns, 0, 0, 0);
@@ -546,4 +531,10 @@ void EtherCATMaster::send_mode_of_operation(int8_t value)
 {
     mode_flag = true;
     
+}
+
+
+void EtherCATMaster::csvmode(int32_t value){
+    mode_flag2 = true;
+    csv_value = value;
 }

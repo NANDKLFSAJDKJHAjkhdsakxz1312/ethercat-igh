@@ -17,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->sendcwButton, &QPushButton::clicked, this, &MainWindow::sendcw_qt);
     connect(ui->changemodeButton, &QPushButton::clicked, this, &MainWindow::changemode_qt);
     connect(ui->startrtthreadButton, &QPushButton::clicked, this, &MainWindow::start_rt_thread_qt);
+    connect(ui->csvmode, &QPushButton::clicked, this, &MainWindow::csvmode);    
 }
 
 MainWindow::~MainWindow()
@@ -132,3 +133,22 @@ void MainWindow::changemode_qt()
 void MainWindow::start_rt_thread_qt(){
     igh_master->config_rt_params_and_create_pthread();
 }
+
+void MainWindow::csvmode(){
+    
+    // 获取 QLineEdit 输入框的文本
+    QString csvspeedText = ui->csvspeed->text();
+    
+    // 将文本转换为 int 类型
+    bool ok;
+    int32_t speed = csvspeedText.toInt(&ok);
+
+    if (ok) {
+        // 如果转换成功，调用接口
+        igh_master->csvmode(speed);
+    } else {
+        // 处理转换失败的情况（例如输入非数字）
+        qDebug() << "Invalid speed input!";
+    }
+}
+

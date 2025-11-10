@@ -176,6 +176,29 @@
      <string>motor1 pos</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="csvmode">
+    <property name="geometry">
+     <rect>
+      <x>280</x>
+      <y>340</y>
+      <width>80</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>csvmode</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="csvspeed">
+    <property name="geometry">
+     <rect>
+      <x>160</x>
+      <y>340</y>
+      <width>113</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

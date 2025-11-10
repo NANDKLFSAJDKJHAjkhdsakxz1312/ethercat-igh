@@ -23,6 +23,7 @@ private slots:
     void sendcw_qt();
     void changemode_qt();
     void start_rt_thread_qt();
+    void csvmode();
 
 private:
     Ui::MainWindow *ui;

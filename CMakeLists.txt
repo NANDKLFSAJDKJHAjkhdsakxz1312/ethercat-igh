@@ -2,7 +2,7 @@ project(EtherCatUserExample C CXX)
 cmake_minimum_required(VERSION 3.2)
 set(CMAKE_BUILD_TYPE Debug)
 list(APPEND CMAKE_PREFIX_PATH "/home/root/software/qtbase5.15.7_install")
-list(APPEND CMAKE_PREFIX_PATH "/home/root/software/ethercat_install")
+list(APPEND CMAKE_PREFIX_PATH "/home/root/software/ethercat_igh_1.6_install")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
